@@ -1,0 +1,49 @@
+!
+vlan internal order ascending range 3500 3700
+!
+transceiver qsfp default-mode 4x10G
+!
+{% for alias in aliases %}
+alias {{ alias }} {{ aliases[alias] }}
+{% endfor %}
+!
+daemon TerminAttr
+   {{ terminattr_string }}
+   no shutdown
+!
+ip routing
+vrf instance MGMT
+no ip routing vrf MGMT
+!
+service routing protocols model multi-agent
+!
+ip name-server vrf MGMT {{ ns_1 }}
+ip name-server vrf MGMT {{ ns_2 }}
+!
+ntp local-interface vrf MGMT Management1
+ntp server vrf MGMT {{ ntp_1 }} prefer
+ntp server vrf MGMT {{ ntp_2 }}
+!
+!!!!snmp-stuff
+!
+!!!!radius-stuff
+!
+{% for user in user_accounts %}
+username {{ user }} privilege {{ user_accounts[user].privilege }} role {{ user_accounts[user].role }} secret sha512 {{ user_accounts[user].sha512_password }}
+{% endfor %}
+!
+ip route vrf MGMT 0.0.0.0/0 {{ mgmt_gw }}
+!
+interface Management1
+   vrf MGMT
+!
+management api http-commands
+   no shutdown
+   protocol http
+   cors allowed-origin all
+   !
+   vrf MGMT
+      no shutdown
+   vrf default
+      no shutdown
+!

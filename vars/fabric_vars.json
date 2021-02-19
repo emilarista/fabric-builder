@@ -1,0 +1,153 @@
+{
+    "fabric_prefix": "DEMO",
+    "underlay_mtu": "9214",
+    "leaf_stp_mode": "mstp",
+    "mlag_vlan": "4094",
+    "ns_1": "8.8.8.8",
+    "ns_2": "8.8.4.4",
+    "ntp_1": "0.se.pool.ntp.org",
+    "ntp_2": "1.se.pool.ntp.org",
+    "bgp_md5": "helloDudeFace!",
+    "mgmt_gw": "10.30.30.1",
+    "underlay_p2p_subnet": "172.31.254.0/23",
+    "vtep_loopbacks_subnet": "192.168.201.0/24",
+    "rid_loopbacks_subnet": "192.168.200.0/24",
+    "terminattr_string": "exec /usr/bin/TerminAttr -ingestgrpcurl=10.20.20.20:9910 -cvcompression=gzip -ingestauth=key,volvo240 -smashexcludes=ale,flexCounter,hardware,kni,pulse,strata -ingestexclude=/Sysdb/cell/1/agent,/Sysdb/cell/2/agent -ingestvrf=MGMT -taillogs",
+    "mlag_subnet": "172.31.253.0/31",
+    "aliases": {
+        "sib": "show ip interface brief"
+    },
+    "user_accounts": {
+        "cvpadmin": {
+            "sha512_password": "$6$WRH0YV9I461XA.qn$BYsYGThSIHOh4ic8qdjnHWq9Zi/l0W8Ws4DZ5Y5yI3hBBWGP03W3ggXWdY7MTqVA8plRvaazG/U8CeMPkT5aE.",
+            "privilege": "15",
+            "role": "network-admin"
+        },
+        "emil": {
+            "sha512_password": "$6$kiCAKn8fb8T12ClP$UchWUxo0y/CpYptWYxj7pC8uzjoUJnvi4lSg1c009mqJG2inlUDQdTi/YVY4M0dzgf4LOkaVtL7U11ZRkP7Rm/",
+            "privilege": "15",
+            "role": "network-admin"
+        }
+    },
+    "switches": {
+        "spines": {
+            "base_asn": 64512,
+            "nodes": {
+                "DH1_SPINE1": {
+                    "id": 1,
+                    "parent_container": "SPINES",
+                    "mgmt_ip": "10.30.30.101/24"
+                },
+                "DH2_SPINE2": {
+                    "id": 2,
+                    "parent_container": "SPINES",
+                    "mgmt_ip": "10.30.30.102/24"
+                }
+            }
+        },
+        "leafs": {
+            "base_asn": 65000,
+            "node_groups": {
+                "DH1_LEAF1": {
+                    "tags": ["compute", "legacy"],
+                    "platform": "j2",
+                    "bgp_asn": 65101,
+                    "peerlink_interfaces": ["Ethernet3", "Ethernet4"],
+                    "type": "L3",
+                    "nodes": {
+                        "DH1_LEAF1A": {
+                            "id": 1,
+                            "uplinks": ["Ethernet1", "Ethernet2"],
+                            "parent_container": "DC_LEAFS",
+                            "mgmt_ip": "10.30.30.103/24"
+                        },
+                        "DH1_LEAF1B": {
+                            "id": 2,
+                            "uplinks": ["Ethernet1", "Ethernet2"],
+                            "parent_container": "DC_LEAFS",
+                            "mgmt_ip": "10.30.30.104/24"
+                        }
+                    }
+                },
+                "DH1-2_LEAF2": {
+                    "tags": ["campus_aggregation"],
+                    "platform": "t3",
+                    "type": "L3",
+                    "bgp_asn": 65102,
+                    "peerlink_interfaces": ["Ethernet3", "Ethernet4"],
+                    "nodes": {
+                        "DH1-2_LEAF2A": {
+                            "id": 3,
+                            "uplinks": ["Ethernet1", "Ethernet2"],
+                            "parent_container": "CAMPUS_LEAFS",
+                            "mgmt_ip": "10.30.30.107/24"
+                        },
+                        "DH1-2_LEAF2B": {
+                            "id": 4,
+                            "uplinks": ["Ethernet1", "Ethernet2"],
+                            "parent_container": "CAMPUS_LEAFS",
+                            "mgmt_ip": "10.30.30.108/24"
+                        }
+                    }
+                },
+                "DH1_LEAF3": {
+                    "tags": ["legacy"],
+                    "platform": "t3",
+                    "bgp_asn": 65103,
+                    "type": "L3",
+                    "nodes": {
+                        "DH1_LEAF3": {
+                            "id": 5,
+                            "uplinks": ["Ethernet1", "Ethernet2"],
+                            "parent_container": "DC_LEAFS",
+                            "mgmt_ip": "10.30.30.111/24"
+                        }
+                    }
+                }
+            }
+        },
+        "subleafs": {
+            "node_groups": {
+                "CAMPUS_LEAF01": {
+                    "tags": ["campus"],
+                    "platform": "t3",
+                    "bgp_asn": 65501,
+                    "type": "L3",
+                    "parent_leafs": ["DH1_LEAF2", "DH1_LEAF2"],
+                    "nodes": {
+                        "CAMPUS_LEAF01": {
+                            "id": 128,
+                            "mgmt_ip": "10.30.30.113/24",
+                            "parent_container": "CAMPUS_LEAFS",
+                            "parent_leafs": ["DH1-2_LEAF2A", "DH1-2_LEAF2B"],
+                            "parent_interfaces": ["Ethernet5", "Ethernet5"],
+                            "uplinks": ["Ethernet1", "Ethernet2"]
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "cvp_containers": [
+        {
+            "name": "DEMO_DC",
+            "parent_container": "Tenant"
+        },
+        {
+            "name": "SPINES",
+            "parent_container": "DEMO_DC"
+        },
+        {
+            "name": "LEAFS",
+            "parent_container": "DEMO_DC"
+        },
+        {
+            "name": "CAMPUS_LEAFS",
+            "parent_container": "LEAFS"
+        },
+        {
+            "name": "DC_LEAFS",
+            "parent_container": "LEAFS"
+        }
+    ]
+}

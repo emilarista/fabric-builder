@@ -1,0 +1,36 @@
+!
+interface Loopback0
+   ip address {{ router_id }}/32
+   exit
+!
+router bgp {{ bgp_asn }}
+   router-id {{ router_id }}
+   no bgp default ipv4-unicast
+   distance bgp 20 200 200
+   graceful-restart restart-time 300
+   graceful-restart
+   maximum-paths 2 ecmp 2
+   neighbor UNDERLAY_IPv4_PEERS peer group
+   neighbor UNDERLAY_IPv4_PEERS password {{ bgp_md5 }}
+   neighbor UNDERLAY_IPv4_PEERS send-community
+   neighbor UNDERLAY_IPv4_PEERS maximum-routes 0
+{% for interface in uplinks %}
+   neighbor {{ interface.neighbor_ip }} peer group UNDERLAY_IPv4_PEERS
+{%     if interface.neighbor_asn is defined %}
+   neighbor {{ interface.neighbor_ip }} remote-as {{ interface.neighbor_asn }}
+{%     else %}
+   neighbor {{ interface.neighbor_ip }} remote-as {{ spine_asn }}
+{%     endif %}
+{% endfor %}
+{% for interface in downlinks %}
+   neighbor {{ interface.neighbor_ip }} peer group UNDERLAY_IPv4_PEERS
+   neighbor {{ interface.neighbor_ip }} remote-as {{ interface.neighbor_asn }}
+{% endfor %}
+   redistribute connected
+   !
+   address-family ipv4
+      neighbor UNDERLAY_IPv4_PEERS activate
+      exit
+   !
+   exit
+!

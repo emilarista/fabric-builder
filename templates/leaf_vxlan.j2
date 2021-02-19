@@ -1,0 +1,9 @@
+interface Vxlan1
+   vxlan source-interface Loopback1
+   vxlan virtual-router encapsulation mac-address mlag-system-id
+   vxlan udp-port 4789
+   vxlan vlan {{ min_vlan }}-{{ max_vlan }} vni {{ min_vni }}-{{ max_vni }}
+{% for vtep in flood_list %}
+   vxlan flood vtep add {{ vtep }}
+{% endfor %}
+!

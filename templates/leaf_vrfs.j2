@@ -1,0 +1,6 @@
+{% for vrf in vrfs %}
+vrf instance {{ vrf }}
+!
+ip routing vrf {{ vrf }}
+!
+{% endfor %}

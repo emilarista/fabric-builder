@@ -1,0 +1,9 @@
+vlan {{ vlan }}
+   name {{ name }}
+!
+interface vlan{{ vlan }}
+   vrf {{ vrf }}
+   ip address {{ svi_ip }}
+   description {{ name }}
+   no autostate
+!

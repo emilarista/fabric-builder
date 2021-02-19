@@ -1,0 +1,13 @@
+{% for profile in profiles %}
+interface profile {{ profile }}
+   command switchport mode {{ profiles[profile].mode }}
+{%     if profiles[profile].mode == "access" %}
+   command switchport access vlan {{ profiles[profile].vlan }}
+{%     elif profiles[profile].mode == "trunk" %}
+   command switchport trunk allowed vlan {{ profiles[profile].vlans }}
+{%         if profiles[profile].native_vlan is defined %}
+   command switchport trunk native vlan {{ profiles[profile].native_vlan }}
+{%         endif %}
+{%     endif %}
+!
+{% endfor %}

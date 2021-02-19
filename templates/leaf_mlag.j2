@@ -1,0 +1,36 @@
+!
+vlan {{ mlag_vlan }}
+   trunk group MLAG_VLAN
+!
+interface Vlan{{ mlag_vlan }}
+   description MLAG_PEER
+   !!! mtu {{ underlay_mtu }} vEOS-lab caveat !!!
+   no autostate
+   ip address {{ mlag_ip }}/31
+!
+no spanning-tree vlan-id {{ mlag_vlan }}
+!
+{% for interface in peerlink_interfaces %}
+interface {{ interface }}
+   switchport
+   description MLAG_PEERLINK
+   channel-group {{ mlag_peerlink_portchannel }} mode active
+   no shutdown
+   exit
+!
+{% endfor %}
+interface Port-Channel {{ mlag_peerlink_portchannel }}
+   description MLAG_PEERLINK
+   switchport mode trunk
+   switchport trunk allowed vlan 1-4094
+   switchport trunk group MLAG_VLAN
+   exit
+!
+mlag configuration
+   domain-id {{ mlag_domain }}
+   local-interface Vlan{{ mlag_vlan }}
+   peer-address {{ mlag_peer_ip }}
+   peer-link Port-Channel{{ mlag_peerlink_portchannel }}
+   reload-delay mlag 300
+   reload-delay non-mlag 330
+!

@@ -1,0 +1,18 @@
+{% for vlan in vlans %}
+vlan {{ vlan }}
+   name {{ vlans[vlan].name }}
+!
+{%     if vlans[vlan].ip_address_virtual is defined or vlans[vlan].ip_address is defined %}
+interface Vlan{{ vlan }}
+   vrf {{ vlans[vlan].vrf }}
+   description {{ vlans[vlan].name }}
+{%         if vlans[vlan].ip_address_virtual is defined and vlans[vlan].ip_address_virtual is not none %}
+   ip address virtual {{ vlans[vlan].ip_address_virtual }}
+{%         endif %}
+{%         if vlans[vlan].ip_address is defined and vlans[vlan].ip_address is not none %}
+   ip address {{ vlans[vlan].ip_address }}
+{%         endif %}
+   exit
+!
+{%     endif %}
+{% endfor %}

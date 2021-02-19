@@ -1,0 +1,31 @@
+!
+router bfd
+   multihop interval 3000 min-rx 3000 multiplier 3
+   !multihop interval 1200 min-rx 1200 multiplier 3
+!
+router bgp {{ bgp_asn }}
+   neighbor OVERLAY_IPv4_PEERS peer group
+   neighbor OVERLAY_IPv4_PEERS bfd
+   neighbor OVERLAY_IPv4_PEERS ebgp-multihop 3
+   neighbor OVERLAY_IPv4_PEERS password {{ bgp_md5 }}
+   neighbor OVERLAY_IPv4_PEERS send-community
+   neighbor OVERLAY_IPv4_PEERS maximum-routes 0
+   neighbor OVERLAY_IPv4_PEERS remote-as {{ local_asn }}
+   neighbor OVERLAY_IPv4_PEERS local-as {{ local_asn }} no-prepend replace-as
+   !
+{% for vrf in vrfs %}
+   vrf {{ vrf }}
+{%     for neighbor in vrfs[vrf].neighbors %}
+      neighbor {{ neighbor }} peer group OVERLAY_IPv4_PEERS
+{%     endfor %}
+      redistribute connected
+      !
+      address-family ipv4
+         neighbor OVERLAY_IPv4_PEERS activate
+         exit
+      !
+      exit
+{% endfor %}
+   !
+   exit
+!

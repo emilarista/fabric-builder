@@ -1,0 +1,74 @@
+{
+    "port_profiles": {
+        "ESXi_PROFILE": {
+            "mode": "trunk",
+            "vlans": "2-500"
+        },
+        "STORAGE_PROFILE": {
+            "mode": "access",
+            "vlan": "20"
+        },
+        "ESXi_MGMT": {
+            "mode": "access",
+            "vlan": "100"
+        },
+        "CAMPUS_DOWNLINK": {
+            "mode": "trunk",
+            "vlans": "600-1001",
+            "native_vlan": "1001"
+        }
+    },
+    "port_ranges": [
+        {
+            "ports": "Ethernet5-7",
+            "leafs": ["DH1_LEAF1A", "DH1_LEAF1B"],
+            "profile": "ESXi_PROFILE",
+            "description": "Generic ESXi VMNIC Ports"
+        },
+        {
+            "ports": "Ethernet5-7",
+            "leafs": ["DH1_LEAF3"],
+            "profile": "ESXi_MGMT",
+            "description": "Generic ESXi VMKernel Ports"
+        }
+    ],
+    "servers": {
+        "ESXi_01": {
+            "leafs": ["DH1_LEAF1A", "DH1_LEAF1B"],
+            "ports": ["Ethernet8", "Ethernet8"],
+            "profile": "ESXi_PROFILE",
+            "description": "ESXi_01 port1"
+        },
+        "SOME_BAREMETAL_01": {
+            "leafs": ["DH1_LEAF3"],
+            "ports": ["Ethernet8"],
+            "mode": "access",
+            "vlan": "110",
+            "description": "Some_baremetal_1G_stuff"
+        },
+        "CAMPUS_SWITCH_01": {
+            "leafs": ["DH1-2_LEAF2A", "DH1-2_LEAF2B"],
+            "ports": ["Ethernet6", "Ethernet6"],
+            "mode": "trunk",
+            "vlans": "600-1001",
+            "native_vlan": "1001",
+            "mlag": true
+        },
+        "CAMPUS_SWITCH_02": {
+            "leafs": ["DH1-2_LEAF2A", "DH1-2_LEAF2B"],
+            "ports": ["Ethernet7", "Ethernet7"],
+            "mode": "trunk",
+            "vlans": "600-1001",
+            "native_vlan": "1001",
+            "mlag": true
+        },
+        "CAMPUS_SWITCH_03": {
+            "leafs": ["DH1-2_LEAF2A"],
+            "ports": ["Ethernet8"],
+            "mode": "trunk",
+            "vlans": "600-1001",
+            "native_vlan": "1001",
+            "description": "Single-homed CAMPUS_SWITCH_03"
+        }
+    }
+}

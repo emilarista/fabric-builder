@@ -1,0 +1,23 @@
+{% for port in access_ports %}
+{% if port.description is defined %}
+{%     set description = port.description %}
+{% else %}
+{%     set description = port.name %}
+{% endif %}
+interface {{ port["ports"][0] }}
+   description {{ description }}
+{%     if port.profile is defined %}
+   profile {{ port.profile }}
+{%     elif port.mode is defined %}
+   switchport mode {{ port.mode }}
+{%         if port.mode == "access" %}
+   switchport access vlan {{ port.vlan }}
+{%         elif port.mode == "trunk" %}
+   switchport trunk allowed vlan {{ port.vlans }}
+{%             if port.native_vlan is defined %}
+   switchport trunk native vlan {{ port.native_vlan }}
+{%             endif %}
+{%         endif %}
+{%     endif %}
+!
+{% endfor %}

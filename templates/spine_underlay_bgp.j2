@@ -1,0 +1,28 @@
+!
+interface Loopback 0
+   ip address {{ router_id }}/32
+!
+peer-filter LEAFS_ASN_RANGE
+   match as-range {{ leafs_asn_range }} result accept
+!
+router bgp {{ bgp_asn }}
+   router-id {{ router_id }}
+   no bgp default ipv4-unicast
+   distance bgp 20 200 200
+   graceful-restart restart-time 300
+   graceful-restart
+   maximum-paths 2 ecmp 2
+   neighbor UNDERLAY_IPv4_PEERS peer group
+   neighbor UNDERLAY_IPv4_PEERS password {{ bgp_md5 }}
+   neighbor UNDERLAY_IPv4_PEERS send-community
+   neighbor UNDERLAY_IPv4_PEERS maximum-routes 0
+   bgp listen range {{ underlay_p2p_subnet }} peer-group UNDERLAY_IPv4_PEERS peer-filter LEAFS_ASN_RANGE
+   redistribute connected
+   !
+   address-family ipv4
+      neighbor UNDERLAY_IPv4_PEERS activate
+      exit
+   !
+   exit
+!
+

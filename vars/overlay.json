@@ -1,0 +1,50 @@
+{
+    "routing_vlan_range": "3000-3100",
+    "routing_vlan_subnet": "172.31.252.0/24",
+    "base_vni": 10000,
+    "overlay_asn": 65001,
+    "l2vlans": {
+        "10": {
+            "name": "VMOTION",
+            "tags": ["compute"]
+        },
+        "20": {
+            "name": "ISCSI",
+            "tags": ["legacy", "stoopid", "storage"]
+        }
+    },
+    "vrfs": {
+        "RED": {
+            "l3vlans": {
+                "100": {
+                    "tags": ["compute"],
+                    "ip_address_virtual": "10.100.0.1/24",
+                    "name": "RED_100",
+                    "enabled": true
+                },
+                "110": {
+                    "tags": ["compute"],
+                    "ip_address_virtual": "10.110.0.1/24",
+                    "name": "RED_110",
+                    "enabled": true
+                }
+            }
+        },
+        "BLUE": {
+            "l3vlans": {
+                "200": {
+                    "tags": ["compute"],
+                    "ip_address_virtual": "10.200.0.1/24",
+                    "name": "BLUE_200",
+                    "enabled": true
+                },
+                "210": {
+                    "tags": ["compute", "DH1-2_LEAF2"],
+                    "ip_address_virtual": "10.210.0.1/24",
+                    "name": "BLUE_210",
+                    "enabled": true
+                }
+            }
+        }
+    }
+}

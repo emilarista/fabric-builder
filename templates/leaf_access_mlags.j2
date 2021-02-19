@@ -1,0 +1,28 @@
+{% for mlag in access_mlags %}
+{% if mlag.description is defined %}
+{%     set description = mlag.description %}
+{% else %}
+{%     set description = mlag.name %}
+{% endif %}
+interface {{ mlag["ports"][0] }}
+   channel-group {{ mlag["mlag"] }} mode active
+   description {{ description }}
+!
+interface Port-Channel {{ mlag["mlag"] }}
+   mlag {{ mlag["mlag"] }}
+   description {{ description }}
+{%     if mlag.profile is defined %}
+   profile {{ mlag.profile }}
+{%     elif mlag.mode is defined %}
+   switchport mode {{ mlag.mode }}
+{%         if mlag.mode == "access" %}
+   switchport access vlan {{ mlag.vlan }}
+{%         elif mlag.mode == "trunk" %}
+   switchport trunk allowed vlan {{ mlag.vlans }}
+{%             if mlag.native_vlan is defined %}
+   switchport trunk native vlan {{ mlag.native_vlan }}
+{%             endif %}
+{%         endif %}
+{%     endif %}
+!
+{% endfor %}
