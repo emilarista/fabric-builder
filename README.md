@@ -1,6 +1,6 @@
 # README
 
-Work in progress. Not fully documented thus far.
+Work in progress. Not fully documented thus far. Requirements are python 3.x with some standard modules and the ones listed in requirements.txt.
 
 ## Architecture
 
@@ -12,7 +12,9 @@ It could be modified to do centralized routing by using the "L2" and "L3" leaf v
 
 The script is structured into different parts to help with readability.
 
-Credentials for CVP are read from a credentials.json file which is included in the repo. ATTENTION The location of the credentials file is hard coded, please change to match your environment.
+Credentials for CVP are read from a credentials.json file which is included in the repo. ATTENTION The location of the credentials file is hard coded at the beginning of the script, please change to match your environment:
+
+    credentialsfile = "/path/to/my/credentials.json"
 
 ### Helper Functions etc.
 
